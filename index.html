@@ -719,20 +719,23 @@ table{width:100%;border-collapse:collapse;}
 
 <script>
 /* ================= BioGest — lógica do sistema ================= */
-const STORE_KEY = 'biogest_data_v1';
-const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-const THERAPIES = ["Biomagnetismo","Psicoterapia","Bio 1° sessão","Telebioenergética","Reiki","Massoterapia","Biomicroenergética","Multa","Outro"];
-
-let DATA = null; // {clinicName, passwordHash, clients:[], launches:[]}
-
-/* ---------- storage ---------- */
-function loadData(){
-  const raw = localStorage.getItem(STORE_KEY);
-  if(!raw) return null;
-  try{ return JSON.parse(raw); }catch(e){ return null; }
+function userRef(){
+  return firebaseRef(db, "users/" + auth.currentUser.uid);
 }
-function saveData(){
-  localStorage.setItem(STORE_KEY, JSON.stringify(DATA));
+
+async function loadData(){
+  const snap = await firebaseGet(userRef());
+  if (snap.exists()) {
+    DATA = snap.val();
+  } else {
+    DATA = { clinicName:"", clients:[], launches:[] };
+  }
+}
+
+async function saveData(){
+  if (!auth.currentUser) return;
+  await firebaseSet(userRef(), DATA);
+}
 }
 
 /* ---------- crypto ---------- */
