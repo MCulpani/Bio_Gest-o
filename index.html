@@ -717,21 +717,38 @@ table{width:100%;border-collapse:collapse;}
 
 <div class="toast" id="toast"></div>
 
-<script>
   <script type="module">
     let DATA = { clients: [], launches: [] };
+    const MONTHS = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
+
+const THERAPIES = [
+  "Biomagnetismo",
+  "Psicoterapia",
+  "Bio 1° sessão",
+  "Telebioenergética",
+  "Reiki",
+  "Massoterapia",
+  "Biomicroenergética",
+  "Multa",
+  "Outro"
+];
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  apiKey: "AIzaSyCeirQIQsZqPuBP01seiwU3ANuKpGP_SPg",
+  authDomain: "biogestterapias.firebaseapp.com",
+  databaseURL: "https://biogestterapias-default-rtdb.firebaseio.com",
+  projectId: "biogestterapias",
+  storageBucket: "biogestterapias.firebasestorage.app",
+  messagingSenderId: "467992346954",
+  appId: "1:467992346954:web:0c2592feba9296330c41b3",
+  measurementId: "G-0YG6Y26J3W"
 };
+
   const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
@@ -762,15 +779,15 @@ async function sha256(text){
 }
 
 /* ---------- auth flow ---------- */
-window.addEventListener('DOMContentLoaded', ()=>{
  window.addEventListener('DOMContentLoaded', async () => {
   await loadData();
-});
-  if(!DATA){
-    document.getElementById('setupFields').style.display='block';
-    document.getElementById('loginFields').style.display='none';
+
+  if (!DATA || !DATA.passwordHash) {
+    document.getElementById('setupFields').style.display = 'block';
+    document.getElementById('loginFields').style.display = 'none';
   } else {
-    document.getElementById('authTitle').textContent = DATA.clinicName || 'BioGest';
+    document.getElementById('setupFields').style.display = 'none';
+    document.getElementById('loginFields').style.display = 'block';
   }
 });
 
@@ -823,17 +840,22 @@ window.handleLogin = async function () {
 };
 
 onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    document.getElementById("authScreen").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+    return;
+  }
 
-  if (user) {
-    document.getElementById("authScreen").style.display = "none";
-    document.getElementById("app").style.display = "block";
+  await loadData();
 
-    await loadData();
+  document.getElementById("authScreen").style.display = "none";
+  document.getElementById("app").style.display = "block";
 
-    renderDashboard();
-    renderClients();
-    renderLaunches();
-    renderDebtors();
+  renderDashboard();
+  renderClients();
+  renderLaunches();
+  renderDebtors();
+});
 
   } else {
     document.getElementById("authScreen").style.display = "flex";
