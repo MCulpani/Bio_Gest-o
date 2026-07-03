@@ -393,19 +393,13 @@ table{width:100%;border-collapse:collapse;}
         <input type="text" id="setupClinicName" placeholder="Ex: Espaço Bio Terapias">
       </div>
       <div class="field">
+
 <label>E-mail</label>
+
 <input
 type="email"
 id="setupEmail"
-placeholder="email@dominio.com">
-</div>
-      <div class="field">
-
-<label>E-mail</label>
-
-<input
-type="email"
-id="loginEmail">
+placeholder="contato@clinica.com">
 
 </div>
       <div class="field">
@@ -421,6 +415,16 @@ id="loginEmail">
 
     <div id="loginFields">
       <div class="field">
+     <div class="field">
+
+<label>E-mail</label>
+
+<input
+type="email"
+id="loginEmail"
+placeholder="contato@clinica.com">
+
+</div>   
         <label>Senha</label>
         <input type="password" id="loginPassword" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')handleLogin()">
       </div>
@@ -791,12 +795,35 @@ async function handleSetup(){
   const email = document.getElementById("setupEmail").value.trim();
   const pw = document.getElementById('setupPassword').value;
   const pw2 = document.getElementById('setupPasswordConfirm').value;
+  const email=document
+.getElementById("setupEmail")
+.value
+.trim();
   if(pw.length < 4){ showAuthError('A senha precisa ter pelo menos 4 caracteres.'); return; }
   if(pw !== pw2){ showAuthError('As senhas não coincidem.'); return; }
  try{
 
 await firebaseCreate(auth,email,pw);
+try{
 
+await firebaseCreate(
+
+auth,
+
+email,
+
+pw
+
+);
+
+}catch(e){
+
+showAuthError(e.message);
+
+return;
+
+}
+   
 DATA={
     clinicName:name,
     clients:[],
@@ -1372,32 +1399,35 @@ document.addEventListener('click', (e)=>{
 
 <script type="module">
 
+  </script>
+  <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
 getAuth,
-signInWithEmailAndPassword,
 createUserWithEmailAndPassword,
-onAuthStateChanged,
-signOut
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
 getDatabase,
 ref,
 set,
-get,
-update,
-remove
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+get
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
-const firebaseConfig = {
+const firebaseConfig={
 
-apiKey:"SUA_KEY",
+apiKey:"SUA_API_KEY",
 
-authDomain:"SEU_AUTH",
+authDomain:"SEU_AUTH_DOMAIN",
 
-databaseURL:"SEU_DATABASE",
+databaseURL:"SUA_DATABASE",
 
 projectId:"SEU_PROJECT",
 
@@ -1415,23 +1445,19 @@ window.auth=getAuth(app);
 
 window.db=getDatabase(app);
 
+window.firebaseCreate=createUserWithEmailAndPassword;
+
+window.firebaseLogin=signInWithEmailAndPassword;
+
+window.firebaseLogout=signOut;
+
+window.firebaseObserver=onAuthStateChanged;
+
 window.firebaseRef=ref;
 
 window.firebaseSet=set;
 
 window.firebaseGet=get;
-
-window.firebaseUpdate=update;
-
-window.firebaseRemove=remove;
-
-window.firebaseSignIn=signInWithEmailAndPassword;
-
-window.firebaseCreate=createUserWithEmailAndPassword;
-
-window.firebaseLogout=signOut;
-
-window.firebaseObserver=onAuthStateChanged;
 
 </script>
 </body>
