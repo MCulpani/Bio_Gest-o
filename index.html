@@ -720,11 +720,11 @@ table{width:100%;border-collapse:collapse;}
 <script>
 /* ================= BioGest — lógica do sistema ================= */
 function userRef(){
-  return firebaseRef(db, "users/" + auth.currentUser.uid);
+  return ref(database, "users/" + auth.currentUser.uid);
 }
 
 async function loadData(){
-  const snap = await firebaseGet(userRef());
+  const snap = await get(userRef());
   if (snap.exists()) {
     DATA = snap.val();
   } else {
@@ -734,8 +734,7 @@ async function loadData(){
 
 async function saveData(){
   if (!auth.currentUser) return;
-  await firebaseSet(userRef(), DATA);
-}
+  await set(userRef(), DATA);
 }
 
 /* ---------- crypto ---------- */
