@@ -761,26 +761,46 @@ function showAuthError(msg){
   el.style.display = 'block';
 }
 
-window.handleSetup = async function () {
-  const email = document.getElementById("setupEmail").value;
+wwindow.handleSetup = async function () {
   const pass = document.getElementById("setupPassword").value;
+  const confirm = document.getElementById("setupPasswordConfirm").value;
+  const clinic = document.getElementById("setupClinicName").value;
 
-  try {
-    await createUserWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    alert(e.message);
+  if(pass !== confirm){
+    showAuthError("Senhas não conferem");
+    return;
   }
+
+  await signInAnonymously(auth);
+
+  DATA = {
+    clinicName: clinic,
+    passwordHash: await sha256(pass),
+    clients: [],
+    launches: []
+  };
+
+  await saveData();
+  enterApp();
 };
 
 window.handleLogin = async function () {
-  const email = document.getElementById("loginEmail").value;
   const pass = document.getElementById("loginPassword").value;
 
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    alert(e.message);
+  if(!auth.currentUser){
+    await signInAnonymously(auth);
   }
+
+  await loadData();
+
+  const hash = await sha256(pass);
+
+  if(hash !== DATA.passwordHash){
+    showAuthError("Senha incorreta");
+    return;
+  }
+
+  enterApp();
 };
 
 onAuthStateChanged(auth, async (user) => {
