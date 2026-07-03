@@ -393,6 +393,22 @@ table{width:100%;border-collapse:collapse;}
         <input type="text" id="setupClinicName" placeholder="Ex: Espaço Bio Terapias">
       </div>
       <div class="field">
+<label>E-mail</label>
+<input
+type="email"
+id="setupEmail"
+placeholder="email@dominio.com">
+</div>
+      <div class="field">
+
+<label>E-mail</label>
+
+<input
+type="email"
+id="loginEmail">
+
+</div>
+      <div class="field">
         <label>Criar senha de acesso</label>
         <input type="password" id="setupPassword" placeholder="Mínimo 4 caracteres">
       </div>
@@ -723,7 +739,7 @@ const STORE_KEY = 'biogest_data_v1';
 const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const THERAPIES = ["Biomagnetismo","Psicoterapia","Bio 1° sessão","Telebioenergética","Reiki","Massoterapia","Biomicroenergética","Multa","Outro"];
 
-let DATA = null; // {clinicName, passwordHash, clients:[], launches:[]}
+let DATA = null; // {clinicName, clients:[], launches:[]}
 
 /* ---------- storage ---------- */
 function loadData(){
@@ -743,14 +759,25 @@ async function sha256(text){
 }
 
 /* ---------- auth flow ---------- */
-window.addEventListener('DOMContentLoaded', ()=>{
-  DATA = loadData();
-  if(!DATA){
-    document.getElementById('setupFields').style.display='block';
-    document.getElementById('loginFields').style.display='none';
-  } else {
-    document.getElementById('authTitle').textContent = DATA.clinicName || 'BioGest';
-  }
+window.addEventListener('DOMContentLoaded', () => {
+
+    firebaseObserver(auth, async (user) => {
+
+        if (user) {
+
+            await loadData();
+
+            enterApp();
+
+        } else {
+
+            document.getElementById('setupFields').style.display = 'block';
+            document.getElementById('loginFields').style.display = 'none';
+
+        }
+
+    });
+
 });
 
 function showAuthError(msg){
@@ -761,25 +788,53 @@ function showAuthError(msg){
 
 async function handleSetup(){
   const name = document.getElementById('setupClinicName').value.trim() || 'BioGest';
+  const email = document.getElementById("setupEmail").value.trim();
   const pw = document.getElementById('setupPassword').value;
   const pw2 = document.getElementById('setupPasswordConfirm').value;
   if(pw.length < 4){ showAuthError('A senha precisa ter pelo menos 4 caracteres.'); return; }
   if(pw !== pw2){ showAuthError('As senhas não coincidem.'); return; }
-  const hash = await sha256(pw);
-  DATA = { clinicName:name, passwordHash:hash, clients:[], launches:[] };
-  saveData();
-  enterApp();
+ try{
+
+await firebaseCreate(auth,email,pw);
+
+DATA={
+    clinicName:name,
+    clients:[],
+    launches:[]
+};
+
+await saveData();
+
+enterApp();
+
+}catch(e){
+
+showAuthError(e.message);
+
 }
 
 async function handleLogin(){
-  const pw = document.getElementById('loginPassword').value;
-  const hash = await sha256(pw);
-  if(!DATA || hash !== DATA.passwordHash){
-    showAuthError('Senha incorreta.');
-    return;
-  }
-  document.getElementById('authError').style.display='none';
-  enterApp();
+
+const email =
+document.getElementById("loginEmail").value;
+
+const senha =
+document.getElementById("loginPassword").value;
+
+try{
+
+await firebaseSignIn(auth,email,senha);
+
+await loadData();
+
+enterApp();
+
+}catch(e){
+
+showAuthError("Usuário ou senha inválidos.");
+
+}
+
 }
 
 function enterApp(){
@@ -1314,6 +1369,69 @@ function closeModal(id){
 document.addEventListener('click', (e)=>{
   if(e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
 });
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+getDatabase,
+ref,
+set,
+get,
+update,
+remove
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+
+apiKey:"SUA_KEY",
+
+authDomain:"SEU_AUTH",
+
+databaseURL:"SEU_DATABASE",
+
+projectId:"SEU_PROJECT",
+
+storageBucket:"SEU_BUCKET",
+
+messagingSenderId:"SEU_ID",
+
+appId:"SEU_APP"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+window.auth=getAuth(app);
+
+window.db=getDatabase(app);
+
+window.firebaseRef=ref;
+
+window.firebaseSet=set;
+
+window.firebaseGet=get;
+
+window.firebaseUpdate=update;
+
+window.firebaseRemove=remove;
+
+window.firebaseSignIn=signInWithEmailAndPassword;
+
+window.firebaseCreate=createUserWithEmailAndPassword;
+
+window.firebaseLogout=signOut;
+
+window.firebaseObserver=onAuthStateChanged;
 
 </script>
 </body>
