@@ -1032,6 +1032,7 @@ function drawBalanceRing(current, previous, label){
     <div class="legend-item"><span class="legend-dot" style="background:#D2CAB2;"></span> Mês anterior: <b class="num">${fmtBRL(previous)}</b></div>
     <div class="legend-item" style="color:${deltaColor};">${delta>=0?'▲':'▼'} ${Math.abs(delta).toFixed(1)}% vs. mês anterior</div>
   `;
+document.getElementById('therapyBreakdown').innerHTML = thEl.innerHTML;
 }
 
 /* ================= CLIENTS ================= */
