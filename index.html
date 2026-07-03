@@ -762,28 +762,46 @@ function showAuthError(msg){
   el.style.display = 'block';
 }
 
-async function handleSetup(){
-  const name = document.getElementById('setupClinicName').value.trim() || 'BioGest';
-  const pw = document.getElementById('setupPassword').value;
-  const pw2 = document.getElementById('setupPasswordConfirm').value;
-  if(pw.length < 4){ showAuthError('A senha precisa ter pelo menos 4 caracteres.'); return; }
-  if(pw !== pw2){ showAuthError('As senhas não coincidem.'); return; }
-  const hash = await sha256(pw);
-  DATA = { clinicName:name, passwordHash:hash, clients:[], launches:[] };
-  saveData();
-  enterApp();
-}
+window.handleSetup = async function () {
+  const email = document.getElementById("setupEmail").value;
+  const pass = document.getElementById("setupPassword").value;
 
-async function handleLogin(){
-  const pw = document.getElementById('loginPassword').value;
-  const hash = await sha256(pw);
-  if(!DATA || hash !== DATA.passwordHash){
-    showAuthError('Senha incorreta.');
-    return;
+  try {
+    await createUserWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    alert(e.message);
   }
-  document.getElementById('authError').style.display='none';
-  enterApp();
-}
+};
+
+window.handleLogin = async function () {
+  const email = document.getElementById("loginEmail").value;
+  const pass = document.getElementById("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (user) {
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    await loadData();
+
+    renderDashboard();
+    renderClients();
+    renderLaunches();
+    renderDebtors();
+
+  } else {
+    document.getElementById("authScreen").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+  }
+});
 
 function enterApp(){
   document.getElementById('authScreen').style.display='none';
