@@ -718,10 +718,21 @@ table{width:100%;border-collapse:collapse;}
 <div class="toast" id="toast"></div>
 
 <script>
+  <script type="module">
+    let DATA = { clients: [], launches: [] };
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-const app = initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
+  const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 /* ================= BioGest — lógica do sistema ================= */
@@ -752,7 +763,9 @@ async function sha256(text){
 
 /* ---------- auth flow ---------- */
 window.addEventListener('DOMContentLoaded', ()=>{
-  DATA = loadData();
+ window.addEventListener('DOMContentLoaded', async () => {
+  await loadData();
+});
   if(!DATA){
     document.getElementById('setupFields').style.display='block';
     document.getElementById('loginFields').style.display='none';
@@ -767,7 +780,7 @@ function showAuthError(msg){
   el.style.display = 'block';
 }
 
-wwindow.handleSetup = async function () {
+window.handleSetup = async function () {
   const pass = document.getElementById("setupPassword").value;
   const confirm = document.getElementById("setupPasswordConfirm").value;
   const clinic = document.getElementById("setupClinicName").value;
@@ -1111,6 +1124,7 @@ function autofillClientFromName(){
     document.getElementById('launchCpf').value = c.cpf||'';
     document.getElementById('launchPhone').value = c.phone||'';
   }
+}
 
 /* ================= LAUNCHES ================= */
 function renderLaunches(){
