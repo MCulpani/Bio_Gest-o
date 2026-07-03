@@ -780,7 +780,8 @@ async function sha256(text){
 
 /* ---------- auth flow ---------- */
  window.addEventListener('DOMContentLoaded', async () => {
-  await loadData();
+  await signInAnonymously(auth);
+await loadData();
 
   if (!DATA || !DATA.passwordHash) {
     document.getElementById('setupFields').style.display = 'block';
@@ -855,12 +856,6 @@ onAuthStateChanged(auth, async (user) => {
   renderClients();
   renderLaunches();
   renderDebtors();
-});
-
-  } else {
-    document.getElementById("authScreen").style.display = "flex";
-    document.getElementById("app").style.display = "none";
-  }
 });
 
 function enterApp(){
