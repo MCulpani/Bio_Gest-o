@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioGest — Gestão Financeira</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --ink:#1F3A34;
+  --ink-soft:#3C5750;
+  --paper:#EDEAE0;
+  --paper-raised:#F6F4EC;
+  --line:#D2CAB2;
+  --gold:#B8853A;
+  --gold-soft:#E8D3A7;
+  --rust:#A54B3C;
+  --rust-soft:#EFDAD4;
+  --green:#3F6B4F;
+  --green-soft:#DCE7DD;
+  --text:#28352F;
+  --text-muted:#6E6656;
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  --radius:10px;
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;}
+input,select,textarea{font-family:inherit;}
+
+/* ---------- Auth screen ---------- */
+#authScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(184,133,58,0.10), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(63,107,79,0.12), transparent 45%),
+    var(--ink);
+  padding:24px;
+}
+.auth-card{
+  background:var(--paper-raised);
+  width:100%;
+  max-width:400px;
+  border-radius:16px;
+  padding:40px 36px 32px;
+  box-shadow:0 30px 60px rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.08);
+}
+.auth-mark{
+  width:52px;height:52px;border-radius:50%;
+  border:1.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;
+  color:var(--gold);
+  font-family:var(--font-display);
+  font-size:22px;
+}
+.auth-card h1{
+  font-family:var(--font-display);
+  font-size:26px;
+  text-align:center;
+  margin:0 0 4px;
+  color:var(--ink);
+  font-weight:600;
+}
+.auth-sub{
+  text-align:center;
+  color:var(--text-muted);
+  font-size:13px;
+  margin:0 0 26px;
+  line-height:1.5;
+}
+.field{margin-bottom:16px;}
+.field label{
+  display:block;
+  font-size:12px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:6px;
+  font-weight:600;
+}
+.field input, .field select, .field textarea{
+  width:100%;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:14.5px;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+  transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{
+  border-color:var(--gold);
+}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;
+  border-radius:8px;
+  border:1px solid transparent;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s;
+}
+.btn-primary{background:var(--ink);color:#fff;}
+.btn-primary:hover{background:var(--ink-soft);}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-gold:hover{background:#a5762f;}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line);}
+.btn-ghost:hover{background:rgba(0,0,0,0.04);}
+.btn-danger{background:transparent;color:var(--rust);border-color:var(--rust-soft);}
+.btn-danger:hover{background:var(--rust-soft);}
+.btn-block{width:100%;}
+.btn-sm{padding:6px 12px;font-size:12.5px;border-radius:6px;}
+
+.auth-error{
+  background:var(--rust-soft);
+  color:#7a3327;
+  font-size:13px;
+  padding:9px 12px;
+  border-radius:7px;
+  margin-bottom:14px;
+  display:none;
+}
+.auth-note{
+  margin-top:22px;
+  font-size:11.5px;
+  color:var(--text-muted);
+  line-height:1.6;
+  border-top:1px solid var(--line);
+  padding-top:16px;
+}
+
+/* ---------- App shell ---------- */
+#app{display:none;min-height:100vh;}
+.shell{display:flex;min-height:100vh;}
+
+.sidebar{
+  width:232px;
+  flex-shrink:0;
+  background:var(--ink);
+  color:#EFE9DA;
+  display:flex;
+  flex-direction:column;
+  padding:26px 18px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  padding:0 6px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  margin-bottom:20px;
+}
+.brand-mark{
+  width:34px;height:34px;border-radius:50%;
+  border:1.3px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold-soft);
+  font-family:var(--font-display);
+  font-size:15px;
+  flex-shrink:0;
+}
+.brand-name{font-family:var(--font-display);font-size:17px;font-weight:600;line-height:1.2;}
+.brand-sub{font-size:10.5px;color:#B9AF97;letter-spacing:.05em;text-transform:uppercase;}
+
+.nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:11px 12px;
+  border-radius:8px;
+  color:#D8D2C2;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  border:none;background:none;
+  text-align:left;
+  width:100%;
+  transition:background .12s,color .12s;
+}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
+.nav-item.active{background:rgba(184,133,58,0.22);color:#F3E4C4;}
+.nav-icon{width:17px;text-align:center;flex-shrink:0;font-size:15px;}
+
+.sidebar-footer{
+  border-top:1px solid rgba(255,255,255,0.12);
+  padding-top:14px;
+  margin-top:10px;
+}
+.sidebar-footer button{
+  width:100%;
+  background:none;border:none;
+  color:#B9AF97;
+  font-size:12.5px;
+  padding:8px 12px;
+  text-align:left;
+  cursor:pointer;
+  border-radius:7px;
+}
+.sidebar-footer button:hover{background:rgba(255,255,255,0.06);color:#fff;}
+
+.main{flex:1;min-width:0;padding:32px 40px 60px;overflow-x:hidden;}
+.view{display:none;}
+.view.active{display:block;}
+
+.page-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:26px;flex-wrap:wrap;gap:14px;
+}
+.page-head h2{
+  font-family:var(--font-display);
+  font-size:28px;
+  margin:0 0 4px;
+  color:var(--ink);
+  font-weight:600;
+}
+.page-head p{margin:0;color:var(--text-muted);font-size:13.5px;}
+.head-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* cards */
+.card{
+  background:var(--paper-raised);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px 22px;
+}
+.grid{display:grid;gap:18px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:2fr 1fr;}
+
+.stat-card .stat-label{
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--text-muted);font-weight:600;margin-bottom:10px;
+}
+.stat-card .stat-value{
+  font-family:var(--font-mono);
+  font-size:26px;font-weight:600;color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.stat-card .stat-delta{font-size:12px;margin-top:6px;font-weight:600;}
+.stat-delta.up{color:var(--green);}
+.stat-delta.down{color:var(--rust);}
+.stat-delta.flat{color:var(--text-muted);}
+
+.section-title{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:600;color:var(--ink);
+  margin:0 0 16px;
+}
+
+/* ledger table */
+table{width:100%;border-collapse:collapse;}
+.tbl th{
+  text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--text-muted);font-weight:700;
+  padding:10px 12px;border-bottom:1.5px solid var(--ink);
+}
+.tbl td{
+  padding:12px;border-bottom:1px solid var(--line);
+  font-size:13.5px;color:var(--text);
+  vertical-align:middle;
+}
+.tbl tbody tr:hover{background:rgba(184,133,58,0.06);}
+.tbl .num{font-family:var(--font-mono);}
+.tbl-wrap{overflow-x:auto;}
+
+.badge{
+  display:inline-flex;align-items:center;
+  padding:3px 10px;border-radius:20px;
+  font-size:11.5px;font-weight:600;
+}
+.badge-paid{background:var(--green-soft);color:#2C4C39;}
+.badge-pending{background:var(--rust-soft);color:#7A3327;}
+
+.row-actions{display:flex;gap:6px;}
+.icon-btn{
+  background:none;border:1px solid var(--line);border-radius:6px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:13px;color:var(--ink-soft);
+}
+.icon-btn:hover{background:rgba(0,0,0,0.05);}
+
+.toolbar{
+  display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center;
+  justify-content:center;
+  background:var(--paper-raised);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px 20px;
+}
+.toolbar input[type=text], .toolbar input[type=search], .toolbar input[type=date], .toolbar select{
+  padding:12px 16px;border:1px solid var(--line);border-radius:9px;
+  font-size:14px;background:#fff;color:var(--text);min-width:170px;height:46px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.toolbar select{
+  cursor:pointer;appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%236E6656' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
+}
+.toolbar input:focus, .toolbar select:focus{
+  border-color:var(--gold);outline:none;box-shadow:0 0 0 3px rgba(184,133,58,0.15);
+}
+.search-input{flex:1 1 240px;min-width:220px;}
+.date-field{
+  display:flex;align-items:center;gap:9px;
+  font-size:12.5px;color:var(--text-muted);font-weight:700;
+  text-transform:uppercase;letter-spacing:.03em;
+}
+.date-field input{min-width:150px;height:46px;}
+
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--text-muted);
+}
+.empty-state .em-icon{font-size:34px;margin-bottom:12px;opacity:.6;}
+.empty-state h3{font-family:var(--font-display);color:var(--ink);margin:0 0 6px;}
+.empty-state p{margin:0 0 18px;font-size:13.5px;}
+
+/* balance ring */
+.ring-wrap{display:flex;align-items:center;gap:26px;}
+.ring-legend{display:flex;flex-direction:column;gap:10px;font-size:13px;}
+.legend-item{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+
+/* month bars */
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+.bar{width:100%;border-radius:4px 4px 0 0;background:var(--gold);position:relative;min-height:2px;}
+.bar.pending{background:var(--rust-soft);}
+.bar-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;}
+
+/* modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(31,58,52,0.45);
+  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:#fff;border-radius:14px;width:100%;max-width:520px;
+  max-height:88vh;overflow-y:auto;
+  box-shadow:0 30px 70px rgba(0,0,0,0.3);
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;border-bottom:1px solid var(--line);
+}
+.modal-head h3{font-family:var(--font-display);margin:0;font-size:19px;color:var(--ink);}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+.modal-body{padding:22px 24px;}
+.modal-foot{
+  padding:16px 24px;border-top:1px solid var(--line);
+  display:flex;justify-content:flex-end;gap:10px;
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--ink);color:#fff;
+  padding:13px 20px;border-radius:9px;
+  font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  opacity:0;transform:translateY(10px);
+  transition:all .25s;z-index:200;
+  pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+
+.hint{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+@media (max-width:900px){
+  .shell{flex-direction:column;}
+  .sidebar{width:100%;flex-direction:row;align-items:center;padding:14px 16px;overflow-x:auto;}
+  .brand{border:none;margin:0;padding:0;margin-right:14px;}
+  .nav{flex-direction:row;}
+  .sidebar-footer{display:none;}
+  .main{padding:22px 18px 50px;}
+  .grid-4{grid-template-columns:1fr 1fr;}
+  .grid-3{grid-template-columns:1fr;}
+  .ring-wrap{flex-direction:column;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-mark">B</div>
+    <h1 id="authTitle">BioGest</h1>
+    <p class="auth-sub" id="authSub">Gestão financeira em nuvem</p>
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-error" id="authInfo" style="background:var(--green-soft);color:#2C4C39;"></div>
+
+    <div id="loginFields">
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="loginPassword" placeholder="Sua senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
+      </div>
+      <button class="btn btn-gold btn-block" onclick="handleLogin()" id="loginBtn">Entrar</button>
+      <div style="text-align:center;margin-top:14px;">
+        <a href="#" style="font-size:12.5px;color:var(--text-muted);" onclick="handleForgotPassword(event)">Esqueci minha senha</a>
+      </div>
+    </div>
+
+    <div class="auth-note">
+      Seus dados ficam salvos no Firebase (nuvem) e são acessíveis por qualquer pessoa com login autorizado. O acesso de cada pessoa da equipe é criado por um administrador diretamente no Firebase Console — não há cadastro público neste site.
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div>
+        <div class="brand-name" id="sidebarClinicName">BioGest</div>
+        <div class="brand-sub">Gestão financeira</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')"><span class="nav-icon">◈</span> Painel</button>
+      <button class="nav-item" data-view="clients" onclick="switchView('clients')"><span class="nav-icon">◐</span> Clientes</button>
+      <button class="nav-item" data-view="launches" onclick="switchView('launches')"><span class="nav-icon">≣</span> Lançamentos</button>
+      <button class="nav-item" data-view="debtors" onclick="switchView('debtors')"><span class="nav-icon">◑</span> Devedores</button>
+      <button class="nav-item" data-view="settings" onclick="switchView('settings')"><span class="nav-icon">⚙</span> Ajustes</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="sidebarUserEmail" style="font-size:11px;color:#B9AF97;padding:0 12px 8px;word-break:break-all;"></div>
+      <button onclick="lockApp()">🔒 Sair da conta</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="page-head">
+        <div>
+          <h2>Painel financeiro</h2>
+          <p id="dashSubtitle">Visão geral do ano</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <select id="dashMonthFilter" onchange="renderDashboard()"></select>
+        <select id="dashProfessionalFilter" onchange="renderDashboard()"></select>
+        <select id="dashYearSelect" onchange="renderDashboard()"></select>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:20px;">
+        <div class="card stat-card">
+          <div class="stat-label">Recebido no ano</div>
+          <div class="stat-value" id="statReceived">R$ 0</div>
+          <div class="stat-delta flat" id="statReceivedDelta"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Pendente</div>
+          <div class="stat-value" id="statPending">R$ 0</div>
+          <div class="stat-delta flat" id="statPendingDelta"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Sessões no ano</div>
+          <div class="stat-value" id="statSessions">0</div>
+          <div class="stat-delta flat" id="statSessionsDelta"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Ticket médio</div>
+          <div class="stat-value" id="statAvg">R$ 0</div>
+          <div class="stat-delta flat" id="statAvgDelta"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-3" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="section-title">Faturamento por mês</div>
+          <div class="bars" id="monthBars"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Equilíbrio do mês</div>
+          <div class="ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120" id="balanceRing"></svg>
+            <div class="ring-legend" id="ringLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="section-title">Faturamento por profissional</div>
+        <div id="professionalBreakdown"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Terapias mais realizadas</div>
+        <div id="therapyBreakdown"></div>
+      </div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section class="view" id="view-clients">
+      <div class="page-head">
+        <div>
+          <h2>Clientes</h2>
+          <p>Cadastro e histórico de cada paciente</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-gold" onclick="openClientModal()">+ Novo cliente</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input type="search" class="search-input" placeholder="Buscar por nome, CPF ou telefone…" id="clientSearch" oninput="renderClients()">
+        <select id="clientProfessionalFilter" onchange="renderClients()"></select>
+      </div>
+      <div class="card" style="padding:0;">
+        <div class="tbl-wrap">
+          <table class="tbl" id="clientsTable">
+            <thead><tr>
+              <th>Nome</th><th>CPF</th><th>Telefone</th><th>Total pago</th><th>Pendências</th><th>Status</th><th></th>
+            </tr></thead>
+            <tbody id="clientsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAUNCHES -->
+    <section class="view" id="view-launches">
+      <div class="page-head">
+        <div>
+          <h2>Lançamentos</h2>
+          <p>Todas as sessões e pagamentos registrados</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-gold" onclick="openLaunchModal()">+ Novo lançamento</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input type="search" class="search-input" placeholder="Buscar por cliente…" id="launchSearch" oninput="renderLaunches()">
+        <select id="launchMonthFilter" onchange="renderLaunches()"></select>
+        <select id="launchStatusFilter" onchange="renderLaunches()">
+          <option value="">Todos os status</option>
+          <option value="Pago">Pago</option>
+          <option value="Pendente">Pendente</option>
+        </select>
+        <select id="launchTherapyFilter" onchange="renderLaunches()"></select>
+        <select id="launchProfessionalFilter" onchange="renderLaunches()"></select>
+      </div>
+      <div class="toolbar">
+        <label class="date-field">De <input type="date" id="launchDateFrom" onchange="renderLaunches()"></label>
+        <label class="date-field">Até <input type="date" id="launchDateTo" onchange="renderLaunches()"></label>
+        <button class="btn btn-ghost btn-sm" onclick="clearLaunchDateFilter()">Limpar datas</button>
+      </div>
+      <div class="card" style="padding:0;">
+        <div class="tbl-wrap">
+          <table class="tbl" id="launchesTable">
+            <thead><tr>
+              <th>Data</th><th>Cliente</th><th>Profissional</th><th>Terapia</th><th>Valor</th><th>Pagamento</th><th>Status</th><th></th>
+            </tr></thead>
+            <tbody id="launchesTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEBTORS -->
+    <section class="view" id="view-debtors">
+      <div class="page-head">
+        <div>
+          <h2>Devedores</h2>
+          <p>Clientes com pagamentos pendentes</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <select id="debtorsMonthFilter" onchange="renderDebtors()"></select>
+        <select id="debtorsProfessionalFilter" onchange="renderDebtors()"></select>
+      </div>
+      <div class="card stat-card" style="max-width:280px;margin-bottom:20px;">
+        <div class="stat-label">Total pendente</div>
+        <div class="stat-value" id="debtorsTotal" style="color:var(--rust);">R$ 0</div>
+      </div>
+      <div class="card" style="padding:0;">
+        <div class="tbl-wrap">
+          <table class="tbl" id="debtorsTable">
+            <thead><tr>
+              <th>Cliente</th><th>Profissional</th><th>Terapia</th><th>Data</th><th>Valor</th><th>Contato</th><th></th>
+            </tr></thead>
+            <tbody id="debtorsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="page-head">
+        <div>
+          <h2>Ajustes</h2>
+          <p>Preferências, dados e segurança</p>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <div class="card">
+          <div class="section-title">Dados da clínica</div>
+          <div class="field">
+            <label>Nome da clínica</label>
+            <input type="text" id="settingsClinicName">
+          </div>
+          <button class="btn btn-primary" onclick="saveClinicName()">Salvar nome</button>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Segurança</div>
+          <p class="hint" style="margin-bottom:12px;">Sua conta é gerenciada pelo Firebase Authentication.</p>
+          <div class="field"><label>Nova senha</label><input type="password" id="newPassword" autocomplete="new-password"></div>
+          <button class="btn btn-primary" onclick="changePassword()">Alterar senha</button>
+          <p class="hint" style="margin-top:10px;">Se der erro de "sessão expirada", saia e entre novamente antes de trocar a senha.</p>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Backup dos dados</div>
+          <p class="hint" style="margin-bottom:14px;">Os dados ficam no Firebase (nuvem), compartilhados entre todos que fizerem login. Exporte para editar em massa no Excel (ex: preencher o profissional de vários lançamentos de uma vez) e importe de volta.</p>
+          <button class="btn btn-ghost btn-block" style="margin-bottom:10px;" onclick="exportBackup()">⬇ Exportar planilha (.xlsx)</button>
+          <label class="btn btn-ghost btn-block" style="cursor:pointer;">
+            ⬆ Importar planilha (.xlsx)
+            <input type="file" accept=".xlsx,.xls" style="display:none;" onchange="importBackup(event)">
+          </label>
+          <p class="hint" style="margin-top:10px;">A planilha tem as abas <b>Lançamentos</b>, <b>Clientes</b> e <b>Profissionais</b>, cada linha com uma coluna <b>ID</b>. Não apague nem edite a coluna ID — é ela que garante que a edição atualize o registro certo, em vez de criar um duplicado. Linhas novas (sem ID) são cadastradas como novas.</p>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Profissionais</div>
+          <p class="hint" style="margin-bottom:12px;">Cadastre os profissionais que atendem na clínica para usar nos lançamentos e filtros.</p>
+          <div class="field-row" style="align-items:flex-end;">
+            <div class="field" style="margin-bottom:0;"><label>Nome do profissional</label><input type="text" id="newProfessionalName" placeholder="Ex: Dra. Ana Souza"></div>
+            <button class="btn btn-primary" style="height:44px;" onclick="addProfessional()">Adicionar</button>
+          </div>
+          <div id="professionalsList" style="margin-top:16px;display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Origem dos clientes novos</div>
+          <p class="hint" style="margin-bottom:12px;">Opções disponíveis para "Como chegou até a clínica" ao registrar um cliente novo. Mídias sociais, Indicação, Cartão presente e Outros já vêm prontos — cadastre aqui se lembrar de outras origens depois.</p>
+          <div class="field-row" style="align-items:flex-end;">
+            <div class="field" style="margin-bottom:0;"><label>Nova origem</label><input type="text" id="newChannelName" placeholder="Ex: Evento, Parceria..."></div>
+            <button class="btn btn-primary" style="height:44px;" onclick="addChannel()">Adicionar</button>
+          </div>
+          <div id="channelsList" style="margin-top:16px;display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Zona de risco</div>
+          <p class="hint" style="margin-bottom:14px;">Apaga clientes e lançamentos permanentemente do banco de dados na nuvem, para todos os usuários.</p>
+          <button class="btn btn-danger btn-block" onclick="resetAllData()">Apagar todos os dados</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="clientModalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="clientModalTitle">Novo cliente</h3><button class="modal-close" onclick="closeModal('clientModalOverlay')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="clientId">
+      <div class="field"><label>Nome completo</label><input type="text" id="clientName"></div>
+      <div class="field-row">
+        <div class="field"><label>CPF</label><input type="text" id="clientCpf"></div>
+        <div class="field"><label>Telefone</label><input type="text" id="clientPhone" placeholder="DDD + número"></div>
+      </div>
+      <div class="field"><label>Observações</label><textarea id="clientNotes" rows="3"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('clientModalOverlay')">Cancelar</button>
+      <button class="btn btn-gold" onclick="saveClient()">Salvar cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- LAUNCH MODAL -->
+<div class="modal-overlay" id="launchModalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="launchModalTitle">Novo lançamento</h3><button class="modal-close" onclick="closeModal('launchModalOverlay')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="launchId">
+      <div class="field">
+        <label>Cliente</label>
+        <input type="text" id="launchClientName" list="clientNamesList" placeholder="Nome do cliente" oninput="autofillClientFromName()">
+        <datalist id="clientNamesList"></datalist>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>CPF</label><input type="text" id="launchCpf"></div>
+        <div class="field"><label>Telefone</label><input type="text" id="launchPhone"></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Tipo de cliente</label>
+          <select id="launchClientType" onchange="toggleAcquisitionField()">
+            <option value="Recorrente">Recorrente</option>
+            <option value="Novo">Novo</option>
+          </select>
+        </div>
+        <div class="field" id="acquisitionField" style="display:none;">
+          <label>Como chegou até a clínica</label>
+          <select id="launchAcquisitionChannel"></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Data da sessão</label><input type="date" id="launchDate"></div>
+        <div class="field">
+          <label>Profissional que atendeu</label>
+          <input type="text" id="launchProfessional" list="professionalNamesList" placeholder="Nome do profissional">
+          <datalist id="professionalNamesList"></datalist>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Tipo de terapia</label>
+          <select id="launchTherapy">
+            <option>Biomagnetismo</option>
+            <option>Psicoterapia</option>
+            <option>Bio 1° sessão</option>
+            <option>Telebioenergética</option>
+            <option>Reiki</option>
+            <option>Massoterapia</option>
+            <option>Biomicroenergética</option>
+            <option>Multa</option>
+            <option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Valor (R$)</label><input type="number" step="0.01" id="launchValue"></div>
+        <div class="field">
+          <label>Status</label>
+          <select id="launchStatus">
+            <option>Pago</option>
+            <option>Pendente</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Forma de pagamento</label>
+          <select id="launchPaymentType">
+            <option value="">—</option>
+            <option>Pix</option>
+            <option>Dinheiro</option>
+            <option>Cartão</option>
+            <option>Permuta</option>
+            <option>Vale Presente</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="field"><label>Data do pagamento</label><input type="date" id="launchPaymentDate"></div>
+      </div>
+      <div class="field"><label>Observações</label><textarea id="launchObs" rows="2"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('launchModalOverlay')">Cancelar</button>
+      <button class="btn btn-gold" onclick="saveLaunch()">Salvar lançamento</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* ================= BioGest — lógica do sistema (Firebase) ================= */
+const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const THERAPIES = ["Biomagnetismo","Psicoterapia","Bio 1° sessão","Telebioenergética","Reiki","Massoterapia","Biomicroenergética","Multa","Outro"];
+const CHANNELS_DEFAULT = ["Mídias sociais","Indicação","Cartão presente","Outros"];
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCeirQIQsZqPuBP01seiwU3ANuKpGP_SPg",
+  authDomain: "biogestterapias.firebaseapp.com",
+  databaseURL: "https://biogestterapias-default-rtdb.firebaseio.com",
+  projectId: "biogestterapias",
+  storageBucket: "biogestterapias.firebasestorage.app",
+  messagingSenderId: "467992346954",
+  appId: "1:467992346954:web:0c2592feba9296330c41b3",
+  measurementId: "G-0YG6Y26J3W"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+let DATA = { clinicName:'BioGest', clients:[], launches:[], professionals:[], channels:[] }; // in-memory mirror of the database
+let dbListenersAttached = false;
+
+/* ---------- auth flow ---------- */
+window.addEventListener('DOMContentLoaded', ()=>{
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      enterApp(user);
+    } else {
+      document.getElementById('app').style.display='none';
+      document.getElementById('authScreen').style.display='flex';
+      detachDbListeners();
+    }
+  });
+});
+
+function showAuthError(msg){
+  const el = document.getElementById('authError');
+  const info = document.getElementById('authInfo');
+  info.style.display='none';
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function showAuthInfo(msg){
+  const el = document.getElementById('authError');
+  const info = document.getElementById('authInfo');
+  el.style.display='none';
+  info.textContent = msg;
+  info.style.display = 'block';
+}
+
+function friendlyAuthError(err){
+  const map = {
+    'auth/invalid-email':'E-mail inválido.',
+    'auth/user-not-found':'E-mail não cadastrado.',
+    'auth/wrong-password':'Senha incorreta.',
+    'auth/invalid-credential':'E-mail ou senha incorretos.',
+    'auth/weak-password':'A senha precisa ter pelo menos 6 caracteres.',
+    'auth/too-many-requests':'Muitas tentativas. Aguarde um pouco e tente de novo.',
+    'auth/network-request-failed':'Falha de conexão. Verifique sua internet.'
+  };
+  return map[err.code] || err.message || 'Ocorreu um erro. Tente novamente.';
+}
+
+async function handleLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  if(!email || !pw){ showAuthError('Informe e-mail e senha.'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try{
+    await auth.signInWithEmailAndPassword(email, pw);
+    document.getElementById('authError').style.display='none';
+  }catch(err){
+    showAuthError(friendlyAuthError(err));
+  }
+  btn.disabled = false; btn.textContent = 'Entrar';
+}
+
+async function handleForgotPassword(e){
+  if(e) e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email){ showAuthError('Digite seu e-mail no campo acima primeiro.'); return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    showAuthInfo('Enviamos um link de redefinição de senha para '+email+'.');
+  }catch(err){
+    showAuthError(friendlyAuthError(err));
+  }
+}
+
+function enterApp(user){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sidebarUserEmail').textContent = user.email || '';
+  attachDbListeners();
+}
+
+function lockApp(){
+  auth.signOut();
+}
+
+/* ---------- realtime database sync ---------- */
+let refClinic, refClients, refLaunches, refProfessionals, refChannels;
+function attachDbListeners(){
+  if(dbListenersAttached) return;
+  dbListenersAttached = true;
+  refClinic = db.ref('clinicName');
+  refClients = db.ref('clients');
+  refLaunches = db.ref('launches');
+  refProfessionals = db.ref('professionals');
+  refChannels = db.ref('channels');
+
+  refClinic.on('value', snap=>{
+    DATA.clinicName = snap.val() || 'BioGest';
+    document.getElementById('sidebarClinicName').textContent = DATA.clinicName;
+    document.getElementById('settingsClinicName').value = DATA.clinicName;
+    document.getElementById('authTitle').textContent = DATA.clinicName;
+  });
+
+  refClients.on('value', snap=>{
+    const val = snap.val() || {};
+    DATA.clients = Object.keys(val).map(id=>({id, ...val[id]}));
+    populateFilters();
+    populateClientDatalist();
+    refreshCurrentView();
+  });
+
+  refLaunches.on('value', snap=>{
+    const val = snap.val() || {};
+    DATA.launches = Object.keys(val).map(id=>({id, ...val[id]}));
+    populateFilters();
+    refreshCurrentView();
+  });
+
+  refProfessionals.on('value', snap=>{
+    const val = snap.val() || {};
+    DATA.professionals = Object.keys(val).map(id=>({id, ...val[id]})).sort((a,b)=>a.name.localeCompare(b.name));
+    populateFilters();
+    refreshCurrentView();
+  });
+
+  refChannels.on('value', snap=>{
+    const val = snap.val() || {};
+    DATA.channels = Object.keys(val).map(id=>({id, ...val[id]})).sort((a,b)=>a.name.localeCompare(b.name));
+    populateFilters();
+    refreshCurrentView();
+  });
+}
+function detachDbListeners(){
+  if(!dbListenersAttached) return;
+  dbListenersAttached = false;
+  if(refClinic) refClinic.off();
+  if(refClients) refClients.off();
+  if(refLaunches) refLaunches.off();
+  if(refProfessionals) refProfessionals.off();
+  if(refChannels) refChannels.off();
+  DATA = { clinicName:'BioGest', clients:[], launches:[], professionals:[], channels:[] };
+}
+function refreshCurrentView(){
+  const active = document.querySelector('.view.active');
+  if(!active) return;
+  const view = active.id.replace('view-','');
+  if(view==='dashboard') renderDashboard();
+  if(view==='clients') renderClients();
+  if(view==='launches') renderLaunches();
+  if(view==='debtors') renderDebtors();
+  if(view==='settings'){ renderProfessionalsList(); renderChannelsList(); }
+}
+
+/* ---------- navigation ---------- */
+function switchView(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelector('.nav-item[data-view="'+view+'"]').classList.add('active');
+  if(view==='dashboard') renderDashboard();
+  if(view==='clients') renderClients();
+  if(view==='launches') renderLaunches();
+  if(view==='debtors') renderDebtors();
+  if(view==='settings'){ renderProfessionalsList(); renderChannelsList(); }
+}
+function fmtBRL(v){
+  return (v||0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+}
+function monthIndexFromDate(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr+'T00:00:00');
+  if(isNaN(d)) return null;
+  return d.getMonth();
+}
+function yearFromDate(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr+'T00:00:00');
+  if(isNaN(d)) return null;
+  return d.getFullYear();
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function uid(prefix){
+  return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+function waLink(phone){
+  if(!phone) return null;
+  let digits = phone.replace(/\D/g,'');
+  if(digits.length<=11 && !digits.startsWith('55')) digits = '55'+digits;
+  return 'https://wa.me/'+digits;
+}
+
+/* ---------- filters population ---------- */
+function populateFilters(){
+  const yearSel = document.getElementById('dashYearSelect');
+  const years = new Set(DATA.launches.map(l=>yearFromDate(l.date)).filter(Boolean));
+  years.add(new Date().getFullYear());
+  const sorted = Array.from(years).sort((a,b)=>b-a);
+  const prevYear = yearSel.value;
+  yearSel.innerHTML = sorted.map(y=>`<option value="${y}">${y}</option>`).join('');
+  if(sorted.includes(parseInt(prevYear))) yearSel.value = prevYear;
+
+  const monthOptionsHtml = '<option value="">Todos os meses</option>' + MONTHS.map(m=>`<option value="${m}">${m}</option>`).join('');
+  ['launchMonthFilter','dashMonthFilter','debtorsMonthFilter'].forEach(id=>{
+    const sel = document.getElementById(id);
+    const prev = sel.value;
+    sel.innerHTML = monthOptionsHtml;
+    sel.value = prev;
+  });
+
+  const therapySel = document.getElementById('launchTherapyFilter');
+  const prevTherapy = therapySel.value;
+  therapySel.innerHTML = '<option value="">Todas as terapias</option>' + THERAPIES.map(t=>`<option value="${t}">${t}</option>`).join('');
+  therapySel.value = prevTherapy;
+
+  const profOptionsHtml = '<option value="">Todos os profissionais</option>' + DATA.professionals.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+  ['dashProfessionalFilter','clientProfessionalFilter','launchProfessionalFilter','debtorsProfessionalFilter'].forEach(id=>{
+    const sel = document.getElementById(id);
+    const prev = sel.value;
+    sel.innerHTML = profOptionsHtml;
+    if(DATA.professionals.some(p=>p.name===prev)) sel.value = prev;
+  });
+
+  const profDatalist = document.getElementById('professionalNamesList');
+  if(profDatalist) profDatalist.innerHTML = DATA.professionals.map(p=>`<option value="${p.name}">`).join('');
+
+  const allChannels = CHANNELS_DEFAULT.concat(DATA.channels.map(c=>c.name).filter(n=>!CHANNELS_DEFAULT.includes(n)));
+  const channelSel = document.getElementById('launchAcquisitionChannel');
+  if(channelSel){
+    const prev = channelSel.value;
+    channelSel.innerHTML = allChannels.map(c=>`<option>${c}</option>`).join('');
+    if(allChannels.includes(prev)) channelSel.value = prev;
+  }
+}
+
+function renderProfessionalsList(){
+  const el = document.getElementById('professionalsList');
+  if(!el) return;
+  if(!DATA.professionals.length){
+    el.innerHTML = '<p class="hint">Nenhum profissional cadastrado ainda.</p>';
+    return;
+  }
+  el.innerHTML = DATA.professionals.map(p=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--line);border-radius:8px;">
+      <span style="font-size:13.5px;">${p.name}</span>
+      <button class="icon-btn" title="Excluir" onclick="deleteProfessional('${p.id}')">🗑</button>
+    </div>
+  `).join('');
+}
+
+async function addProfessional(){
+  const input = document.getElementById('newProfessionalName');
+  const name = input.value.trim();
+  if(!name){ toast('Informe o nome do profissional.'); return; }
+  if(DATA.professionals.some(p=>p.name.toLowerCase()===name.toLowerCase())){ toast('Esse profissional já está cadastrado.'); return; }
+  try{
+    await db.ref('professionals').push({name});
+    input.value = '';
+    toast('Profissional cadastrado.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+async function deleteProfessional(id){
+  if(!confirm('Excluir este profissional? Lançamentos já registrados não serão alterados.')) return;
+  try{
+    await db.ref('professionals/'+id).remove();
+    toast('Profissional excluído.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+/* ---------- acquisition channels ---------- */
+function toggleAcquisitionField(){
+  const type = document.getElementById('launchClientType').value;
+  document.getElementById('acquisitionField').style.display = (type==='Novo') ? 'block' : 'none';
+}
+
+function renderChannelsList(){
+  const el = document.getElementById('channelsList');
+  if(!el) return;
+  const defaultsHtml = CHANNELS_DEFAULT.map(name=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);">
+      <span style="font-size:13.5px;">${name}</span>
+      <span class="hint" style="margin:0;">padrão</span>
+    </div>
+  `).join('');
+  const customHtml = DATA.channels.map(c=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--line);border-radius:8px;">
+      <span style="font-size:13.5px;">${c.name}</span>
+      <button class="icon-btn" title="Excluir" onclick="deleteChannel('${c.id}')">🗑</button>
+    </div>
+  `).join('');
+  el.innerHTML = defaultsHtml + customHtml;
+}
+
+async function addChannel(){
+  const input = document.getElementById('newChannelName');
+  const name = input.value.trim();
+  if(!name){ toast('Informe o nome da origem.'); return; }
+  const all = CHANNELS_DEFAULT.concat(DATA.channels.map(c=>c.name));
+  if(all.some(n=>n.toLowerCase()===name.toLowerCase())){ toast('Essa origem já existe.'); return; }
+  try{
+    await db.ref('channels').push({name});
+    input.value = '';
+    toast('Origem cadastrada.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+async function deleteChannel(id){
+  if(!confirm('Excluir esta origem? Lançamentos já registrados não serão alterados.')) return;
+  try{
+    await db.ref('channels/'+id).remove();
+    toast('Origem excluída.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  const year = parseInt(document.getElementById('dashYearSelect').value) || new Date().getFullYear();
+  const monthFilter = document.getElementById('dashMonthFilter').value;
+  const profFilter = document.getElementById('dashProfessionalFilter').value;
+
+  const inYear = DATA.launches.filter(l=>{
+    if(yearFromDate(l.date)!==year) return false;
+    if(monthFilter && MONTHS[monthIndexFromDate(l.date)] !== monthFilter) return false;
+    if(profFilter && l.professional !== profFilter) return false;
+    return true;
+  });
+  const paid = inYear.filter(l=>l.status==='Pago');
+  const pending = inYear.filter(l=>l.status==='Pendente');
+  const totalPaid = paid.reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  const totalPending = pending.reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  const avgTicket = paid.length ? totalPaid/paid.length : 0;
+
+  let subtitle = 'Visão geral de ' + (monthFilter ? monthFilter+' de ' : '') + year;
+  if(profFilter) subtitle += ' · ' + profFilter;
+  document.getElementById('dashSubtitle').textContent = subtitle;
+  document.getElementById('statReceived').textContent = fmtBRL(totalPaid);
+  document.getElementById('statPending').textContent = fmtBRL(totalPending);
+  document.getElementById('statSessions').textContent = inYear.length;
+  document.getElementById('statAvg').textContent = fmtBRL(avgTicket);
+
+  // month bars (always shows the whole year, ignoring the month filter, but respecting professional filter)
+  const yearRowsForBars = DATA.launches.filter(l=>{
+    if(yearFromDate(l.date)!==year) return false;
+    if(profFilter && l.professional !== profFilter) return false;
+    return true;
+  });
+  const byMonth = MONTHS.map((m,i)=>{
+    const rows = yearRowsForBars.filter(l=>monthIndexFromDate(l.date)===i);
+    return {
+      month:m,
+      paid: rows.filter(r=>r.status==='Pago').reduce((s,r)=>s+(parseFloat(r.value)||0),0),
+      pending: rows.filter(r=>r.status==='Pendente').reduce((s,r)=>s+(parseFloat(r.value)||0),0)
+    };
+  });
+  const maxVal = Math.max(1, ...byMonth.map(m=>m.paid+m.pending));
+  const barsEl = document.getElementById('monthBars');
+  barsEl.innerHTML = byMonth.map(m=>{
+    const h = Math.max(2, Math.round((m.paid/maxVal)*110));
+    const hp = Math.max(m.pending>0?2:0, Math.round((m.pending/maxVal)*110));
+    const title = `${m.month}: ${fmtBRL(m.paid)} pago` + (m.pending?` · ${fmtBRL(m.pending)} pendente`:'');
+    const totalLabel = fmtBRL(m.paid + m.pending).replace('R$','').trim();
+    return `<div class="bar-col" title="${title}">
+        <div style="font-size:9.5px;color:var(--text-muted);font-family:var(--font-mono);white-space:nowrap;">${m.paid+m.pending>0?totalLabel:''}</div>
+        <div style="display:flex;flex-direction:column-reverse;align-items:center;width:100%;height:110px;justify-content:flex-start;gap:2px;">
+          <div class="bar" style="height:${h}px;"></div>
+          ${hp?`<div class="bar pending" style="height:${hp}px;"></div>`:''}
+        </div>
+        <div class="bar-label">${m.month.slice(0,3)}</div>
+      </div>`;
+  }).join('');
+
+  // balance ring: current calendar month vs previous month (received), respecting professional filter
+  const now = new Date();
+  const refM = now.getMonth(), refY = now.getFullYear();
+  const ringBase = DATA.launches.filter(l=> !profFilter || l.professional===profFilter );
+  const curMonthPaid = ringBase.filter(l=>l.status==='Pago' && yearFromDate(l.date)===refY && monthIndexFromDate(l.date)===refM)
+      .reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  let prevM = refM-1, prevY = refY; if(prevM<0){prevM=11;prevY--;}
+  const prevMonthPaid = ringBase.filter(l=>l.status==='Pago' && yearFromDate(l.date)===prevY && monthIndexFromDate(l.date)===prevM)
+      .reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  drawBalanceRing(curMonthPaid, prevMonthPaid, MONTHS[refM]);
+
+  // professional breakdown (respects year/month/professional filters selected above)
+  const byProf = {};
+  paid.forEach(l=>{
+    const p = l.professional || 'Não informado';
+    byProf[p] = (byProf[p]||0) + (parseFloat(l.value)||0);
+  });
+  const profEntries = Object.entries(byProf).sort((a,b)=>b[1]-a[1]);
+  const maxP = Math.max(1, ...profEntries.map(e=>e[1]));
+  const profEl = document.getElementById('professionalBreakdown');
+  if(!profEntries.length){
+    profEl.innerHTML = '<p class="hint">Nenhum lançamento com profissional informado para este período.</p>';
+  } else {
+    profEl.innerHTML = profEntries.map(([name,val])=>{
+      const pct = Math.round((val/maxP)*100);
+      return `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">
+          <span>${name}</span><span class="num">${fmtBRL(val)}</span>
+        </div>
+        <div style="background:var(--line);height:7px;border-radius:4px;overflow:hidden;">
+          <div style="background:var(--green);height:100%;width:${pct}%;"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // therapy breakdown
+  const byTherapy = {};
+  paid.forEach(l=>{
+    const t = l.therapy || 'Outro';
+    byTherapy[t] = (byTherapy[t]||0) + (parseFloat(l.value)||0);
+  });
+  const entries = Object.entries(byTherapy).sort((a,b)=>b[1]-a[1]);
+  const maxT = Math.max(1, ...entries.map(e=>e[1]));
+  const totalTherapy = entries.reduce((s,[,v])=>s+v,0) || 1;
+  const thEl = document.getElementById('therapyBreakdown');
+  if(!entries.length){
+    thEl.innerHTML = '<p class="hint">Nenhum dado de terapia para este período.</p>';
+  } else {
+    thEl.innerHTML = entries.map(([name,val])=>{
+      const pct = Math.round((val/maxT)*100);
+      const share = ((val/totalTherapy)*100).toFixed(1);
+      return `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;">
+          <span>${name}</span><span class="num">${fmtBRL(val)} <span style="color:var(--text-muted);">(${share}%)</span></span>
+        </div>
+        <div style="background:var(--line);height:7px;border-radius:4px;overflow:hidden;">
+          <div style="background:var(--gold);height:100%;width:${pct}%;"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function drawBalanceRing(current, previous, label){
+  const svg = document.getElementById('balanceRing');
+  const r = 50, cx=60, cy=60, circumference = 2*Math.PI*r;
+  const max = Math.max(current, previous, 1);
+  const pct = Math.min(1, current/max);
+  const dash = circumference*pct;
+  const delta = previous>0 ? ((current-previous)/previous*100) : (current>0?100:0);
+  const deltaColor = delta>=0 ? '#3F6B4F' : '#A54B3C';
+  svg.innerHTML = `
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#D2CAB2" stroke-width="10"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#B8853A" stroke-width="10"
+      stroke-dasharray="${dash} ${circumference}" stroke-linecap="round"
+      transform="rotate(-90 ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" fill="#1F3A34" font-weight="600">${Math.round(pct*100)}%</text>
+    <text x="${cx}" y="${cy+13}" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#6E6656">${label}</text>
+  `;
+  document.getElementById('ringLegend').innerHTML = `
+    <div class="legend-item"><span class="legend-dot" style="background:#B8853A;"></span> Este mês: <b class="num">${fmtBRL(current)}</b></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#D2CAB2;"></span> Mês anterior: <b class="num">${fmtBRL(previous)}</b></div>
+    <div class="legend-item" style="color:${deltaColor};">${delta>=0?'▲':'▼'} ${Math.abs(delta).toFixed(1)}% vs. mês anterior</div>
+  `;
+}
+
+/* ================= CLIENTS ================= */
+function clientTotals(clientKey, cpf, name){
+  const rows = DATA.launches.filter(l => (l.cpf && cpf && l.cpf===cpf) || (!cpf && l.name===name));
+  const paid = rows.filter(r=>r.status==='Pago').reduce((s,r)=>s+(parseFloat(r.value)||0),0);
+  const pending = rows.filter(r=>r.status==='Pendente').reduce((s,r)=>s+(parseFloat(r.value)||0),0);
+  return {paid, pending};
+}
+
+function renderClients(){
+  const q = (document.getElementById('clientSearch').value||'').toLowerCase();
+  const profFilter = document.getElementById('clientProfessionalFilter').value;
+  const tbody = document.getElementById('clientsTbody');
+  let list = DATA.clients.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    (c.cpf||'').toLowerCase().includes(q) ||
+    (c.phone||'').includes(q)
+  );
+  if(profFilter){
+    list = list.filter(c => DATA.launches.some(l => l.professional===profFilter && ((l.cpf && c.cpf && l.cpf===c.cpf) || (!c.cpf && l.name===c.name))));
+  }
+  list = list.sort((a,b)=>a.name.localeCompare(b.name));
+
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+      <div class="em-icon">◐</div>
+      <h3>Nenhum cliente encontrado</h3>
+      <p>Cadastre seu primeiro cliente ou importe seus dados em Ajustes.</p>
+      <button class="btn btn-gold" onclick="openClientModal()">+ Novo cliente</button>
+    </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(c=>{
+    const t = clientTotals(c.id, c.cpf, c.name);
+    const status = t.pending>0 ? '<span class="badge badge-pending">Devedor</span>' : '<span class="badge badge-paid">Em dia</span>';
+    return `<tr>
+      <td>${c.name}</td>
+      <td class="num">${c.cpf||'—'}</td>
+      <td class="num">${c.phone||'—'}</td>
+      <td class="num">${fmtBRL(t.paid)}</td>
+      <td class="num">${t.pending>0?fmtBRL(t.pending):'—'}</td>
+      <td>${status}</td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" title="Editar" onclick="openClientModal('${c.id}')">✎</button>
+          <button class="icon-btn" title="Excluir" onclick="deleteClient('${c.id}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openClientModal(id){
+  document.getElementById('clientId').value = id||'';
+  if(id){
+    const c = DATA.clients.find(x=>x.id===id);
+    document.getElementById('clientModalTitle').textContent = 'Editar cliente';
+    document.getElementById('clientName').value = c.name||'';
+    document.getElementById('clientCpf').value = c.cpf||'';
+    document.getElementById('clientPhone').value = c.phone||'';
+    document.getElementById('clientNotes').value = c.notes||'';
+  } else {
+    document.getElementById('clientModalTitle').textContent = 'Novo cliente';
+    ['clientName','clientCpf','clientPhone','clientNotes'].forEach(f=>document.getElementById(f).value='');
+  }
+  document.getElementById('clientModalOverlay').classList.add('open');
+}
+
+async function saveClient(){
+  const id = document.getElementById('clientId').value;
+  const name = document.getElementById('clientName').value.trim();
+  if(!name){ toast('Informe o nome do cliente.'); return; }
+  const payload = {
+    name,
+    cpf: document.getElementById('clientCpf').value.trim(),
+    phone: document.getElementById('clientPhone').value.trim(),
+    notes: document.getElementById('clientNotes').value.trim()
+  };
+  try{
+    if(id){
+      await db.ref('clients/'+id).update(payload);
+    } else {
+      await db.ref('clients').push(payload);
+    }
+    closeModal('clientModalOverlay');
+    toast('Cliente salvo.');
+  }catch(err){
+    toast('Erro ao salvar: '+(err.message||err));
+  }
+}
+
+async function deleteClient(id){
+  if(!confirm('Excluir este cliente? Os lançamentos associados não serão apagados.')) return;
+  try{
+    await db.ref('clients/'+id).remove();
+    toast('Cliente excluído.');
+  }catch(err){
+    toast('Erro ao excluir: '+(err.message||err));
+  }
+}
+
+function populateClientDatalist(){
+  const dl = document.getElementById('clientNamesList');
+  dl.innerHTML = DATA.clients.map(c=>`<option value="${c.name}">`).join('');
+}
+
+function autofillClientFromName(){
+  const name = document.getElementById('launchClientName').value;
+  const c = DATA.clients.find(x=>x.name===name);
+  if(c){
+    document.getElementById('launchCpf').value = c.cpf||'';
+    document.getElementById('launchPhone').value = c.phone||'';
+  }
+}
+
+/* ================= LAUNCHES ================= */
+function clearLaunchDateFilter(){
+  document.getElementById('launchDateFrom').value = '';
+  document.getElementById('launchDateTo').value = '';
+  renderLaunches();
+}
+
+function renderLaunches(){
+  const q = (document.getElementById('launchSearch').value||'').toLowerCase();
+  const month = document.getElementById('launchMonthFilter').value;
+  const status = document.getElementById('launchStatusFilter').value;
+  const therapy = document.getElementById('launchTherapyFilter').value;
+  const profFilter = document.getElementById('launchProfessionalFilter').value;
+  const dateFrom = document.getElementById('launchDateFrom').value;
+  const dateTo = document.getElementById('launchDateTo').value;
+
+  let list = DATA.launches.filter(l=>{
+    if(q && !l.name.toLowerCase().includes(q)) return false;
+    if(month && l.month !== month && MONTHS[monthIndexFromDate(l.date)] !== month) return false;
+    if(status && l.status !== status) return false;
+    if(therapy && l.therapy !== therapy) return false;
+    if(profFilter && l.professional !== profFilter) return false;
+    if(dateFrom && (!l.date || l.date < dateFrom)) return false;
+    if(dateTo && (!l.date || l.date > dateTo)) return false;
+    return true;
+  }).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  const tbody = document.getElementById('launchesTbody');
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
+      <div class="em-icon">≣</div>
+      <h3>Nenhum lançamento encontrado</h3>
+      <p>Ajuste os filtros ou registre um novo lançamento.</p>
+      <button class="btn btn-gold" onclick="openLaunchModal()">+ Novo lançamento</button>
+    </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(l=>{
+    const badge = l.status==='Pago' ? '<span class="badge badge-paid">Pago</span>' : '<span class="badge badge-pending">Pendente</span>';
+    const novoBadge = l.clientType==='Novo' ? `<span class="badge" style="background:var(--gold-soft);color:#7A5A1E;margin-left:6px;" title="${l.acquisitionChannel?('Origem: '+l.acquisitionChannel):''}">Novo</span>` : '';
+    return `<tr>
+      <td class="num">${l.date ? new Date(l.date+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+      <td>${l.name}${novoBadge}</td>
+      <td>${l.professional||'—'}</td>
+      <td>${l.therapy||'—'}</td>
+      <td class="num">${fmtBRL(l.value)}</td>
+      <td>${l.paymentType||'—'}</td>
+      <td>${badge}</td>
+      <td>
+        <div class="row-actions">
+          ${l.status==='Pendente' ? `<button class="icon-btn" title="Marcar como pago" onclick="markPaid('${l.id}')">✓</button>` : ''}
+          <button class="icon-btn" title="Editar" onclick="openLaunchModal('${l.id}')">✎</button>
+          <button class="icon-btn" title="Excluir" onclick="deleteLaunch('${l.id}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openLaunchModal(id){
+  document.getElementById('launchId').value = id||'';
+  if(id){
+    const l = DATA.launches.find(x=>x.id===id);
+    document.getElementById('launchModalTitle').textContent = 'Editar lançamento';
+    document.getElementById('launchClientName').value = l.name||'';
+    document.getElementById('launchCpf').value = l.cpf||'';
+    document.getElementById('launchPhone').value = l.phone||'';
+    document.getElementById('launchDate').value = l.date||'';
+    document.getElementById('launchProfessional').value = l.professional||'';
+    document.getElementById('launchTherapy').value = l.therapy||'Biomagnetismo';
+    document.getElementById('launchValue').value = l.value||0;
+    document.getElementById('launchStatus').value = l.status||'Pago';
+    document.getElementById('launchPaymentType').value = l.paymentType||'';
+    document.getElementById('launchPaymentDate').value = l.paymentDate||'';
+    document.getElementById('launchObs').value = l.obs||'';
+    document.getElementById('launchClientType').value = l.clientType||'Recorrente';
+    document.getElementById('launchAcquisitionChannel').value = l.acquisitionChannel||CHANNELS_DEFAULT[0];
+    toggleAcquisitionField();
+  } else {
+    document.getElementById('launchModalTitle').textContent = 'Novo lançamento';
+    ['launchClientName','launchCpf','launchPhone','launchDate','launchProfessional','launchValue','launchPaymentDate','launchObs'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('launchTherapy').value = 'Biomagnetismo';
+    document.getElementById('launchStatus').value = 'Pago';
+    document.getElementById('launchPaymentType').value = '';
+    document.getElementById('launchDate').value = new Date().toISOString().slice(0,10);
+    document.getElementById('launchClientType').value = 'Recorrente';
+    toggleAcquisitionField();
+  }
+  populateClientDatalist();
+  document.getElementById('launchModalOverlay').classList.add('open');
+}
+
+async function saveLaunch(){
+  const id = document.getElementById('launchId').value;
+  const name = document.getElementById('launchClientName').value.trim();
+  if(!name){ toast('Informe o nome do cliente.'); return; }
+  const date = document.getElementById('launchDate').value;
+  const clientType = document.getElementById('launchClientType').value;
+  const payload = {
+    name,
+    cpf: document.getElementById('launchCpf').value.trim(),
+    phone: document.getElementById('launchPhone').value.trim(),
+    date,
+    month: date ? MONTHS[monthIndexFromDate(date)] : '',
+    professional: document.getElementById('launchProfessional').value.trim(),
+    therapy: document.getElementById('launchTherapy').value,
+    value: parseFloat(document.getElementById('launchValue').value)||0,
+    status: document.getElementById('launchStatus').value,
+    paymentType: document.getElementById('launchPaymentType').value,
+    paymentDate: document.getElementById('launchPaymentDate').value,
+    obs: document.getElementById('launchObs').value.trim(),
+    payerName: name,
+    payerCpf: document.getElementById('launchCpf').value.trim(),
+    clientType,
+    acquisitionChannel: clientType==='Novo' ? document.getElementById('launchAcquisitionChannel').value : ''
+  };
+
+  try{
+    if(id){
+      await db.ref('launches/'+id).update(payload);
+    } else {
+      await db.ref('launches').push(payload);
+    }
+    // auto-create client if not exists
+    if(!DATA.clients.some(c=> (payload.cpf && c.cpf===payload.cpf) || (!payload.cpf && c.name===name))){
+      await db.ref('clients').push({name, cpf:payload.cpf, phone:payload.phone, notes:''});
+    }
+    closeModal('launchModalOverlay');
+    toast('Lançamento salvo.');
+  }catch(err){
+    toast('Erro ao salvar: '+(err.message||err));
+  }
+}
+
+async function markPaid(id){
+  try{
+    const l = DATA.launches.find(x=>x.id===id);
+    const updates = {status:'Pago'};
+    if(!l.paymentDate) updates.paymentDate = new Date().toISOString().slice(0,10);
+    await db.ref('launches/'+id).update(updates);
+    toast('Marcado como pago.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+async function deleteLaunch(id){
+  if(!confirm('Excluir este lançamento?')) return;
+  try{
+    await db.ref('launches/'+id).remove();
+    toast('Lançamento excluído.');
+  }catch(err){
+    toast('Erro ao excluir: '+(err.message||err));
+  }
+}
+
+/* ================= DEBTORS ================= */
+function renderDebtors(){
+  const monthFilter = document.getElementById('debtorsMonthFilter').value;
+  const profFilter = document.getElementById('debtorsProfessionalFilter').value;
+  const list = DATA.launches.filter(l=>{
+    if(l.status!=='Pendente') return false;
+    if(monthFilter && MONTHS[monthIndexFromDate(l.date)] !== monthFilter) return false;
+    if(profFilter && l.professional !== profFilter) return false;
+    return true;
+  }).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const total = list.reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  document.getElementById('debtorsTotal').textContent = fmtBRL(total);
+
+  const tbody = document.getElementById('debtorsTbody');
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+      <div class="em-icon">◑</div>
+      <h3>Nenhuma pendência</h3>
+      <p>Todos os clientes estão em dia para este filtro.</p>
+    </div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(l=>{
+    const link = waLink(l.phone);
+    return `<tr>
+      <td>${l.name}</td>
+      <td>${l.professional||'—'}</td>
+      <td>${l.therapy||'—'}</td>
+      <td class="num">${l.date ? new Date(l.date+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+      <td class="num">${fmtBRL(l.value)}</td>
+      <td>${link ? `<a href="${link}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">WhatsApp</a>` : '—'}</td>
+      <td><button class="icon-btn" title="Marcar como pago" onclick="markPaid('${l.id}')">✓</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ================= SETTINGS ================= */
+async function saveClinicName(){
+  const name = document.getElementById('settingsClinicName').value.trim() || 'BioGest';
+  try{
+    await db.ref('clinicName').set(name);
+    toast('Nome da clínica atualizado.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+async function changePassword(){
+  const next = document.getElementById('newPassword').value;
+  if(next.length < 6){ toast('A nova senha precisa ter ao menos 6 caracteres.'); return; }
+  try{
+    await auth.currentUser.updatePassword(next);
+    document.getElementById('newPassword').value='';
+    toast('Senha alterada.');
+  }catch(err){
+    if(err.code === 'auth/requires-recent-login'){
+      toast('Por segurança, saia e entre novamente antes de trocar a senha.');
+    } else {
+      toast('Erro: '+(err.message||err));
+    }
+  }
+}
+
+function exportBackup(){
+  const wb = XLSX.utils.book_new();
+
+  const launchRows = DATA.launches.map(l=>({
+    ID: l.id,
+    Data: l.date||'',
+    Nome: l.name||'',
+    CPF: l.cpf||'',
+    Telefone: l.phone||'',
+    Profissional: l.professional||'',
+    Terapia: l.therapy||'',
+    Valor: parseFloat(l.value)||0,
+    Status: l.status||'',
+    'Forma de Pagamento': l.paymentType||'',
+    'Data do Pagamento': l.paymentDate||'',
+    'Tipo de Cliente': l.clientType||'Recorrente',
+    'Origem (se Novo)': l.acquisitionChannel||'',
+    Observações: l.obs||''
+  }));
+  const wsLaunches = XLSX.utils.json_to_sheet(launchRows);
+  XLSX.utils.book_append_sheet(wb, wsLaunches, 'Lançamentos');
+
+  const clientRows = DATA.clients.map(c=>({
+    ID: c.id,
+    Nome: c.name||'',
+    CPF: c.cpf||'',
+    Telefone: c.phone||'',
+    Observações: c.notes||''
+  }));
+  const wsClients = XLSX.utils.json_to_sheet(clientRows);
+  XLSX.utils.book_append_sheet(wb, wsClients, 'Clientes');
+
+  const profRows = DATA.professionals.map(p=>({ ID: p.id, Nome: p.name||'' }));
+  const wsProf = XLSX.utils.json_to_sheet(profRows);
+  XLSX.utils.book_append_sheet(wb, wsProf, 'Profissionais');
+
+  XLSX.writeFile(wb, 'biogest_planilha_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  toast('Planilha exportada.');
+}
+
+function excelDateToISO(v){
+  if(v===undefined || v===null || v==='') return '';
+  if(v instanceof Date){
+    if(isNaN(v)) return '';
+    const tzOffset = v.getTimezoneOffset()*60000;
+    return new Date(v.getTime()-tzOffset).toISOString().slice(0,10);
+  }
+  const s = String(v).trim();
+  // dd/mm/yyyy
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  // already yyyy-mm-dd
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  return '';
+}
+
+function importBackup(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array', cellDates:true});
+      const sheetLaunches = wb.Sheets['Lançamentos'] || wb.Sheets[wb.SheetNames[0]];
+      const sheetClients = wb.Sheets['Clientes'];
+      const sheetProf = wb.Sheets['Profissionais'];
+
+      const launchRows = sheetLaunches ? XLSX.utils.sheet_to_json(sheetLaunches, {defval:''}) : [];
+      const clientRows = sheetClients ? XLSX.utils.sheet_to_json(sheetClients, {defval:''}) : [];
+      const profRows = sheetProf ? XLSX.utils.sheet_to_json(sheetProf, {defval:''}) : [];
+
+      if(!launchRows.length && !clientRows.length && !profRows.length){
+        toast('Não encontrei dados nas abas esperadas (Lançamentos, Clientes, Profissionais).');
+        return;
+      }
+
+      const updates = {};
+
+      launchRows.forEach(row=>{
+        const name = String(row['Nome']||'').trim();
+        if(!name) return;
+        const date = excelDateToISO(row['Data']);
+        const payload = {
+          name,
+          cpf: String(row['CPF']||'').trim(),
+          phone: String(row['Telefone']||'').trim(),
+          date,
+          month: date ? MONTHS[monthIndexFromDate(date)] : '',
+          professional: String(row['Profissional']||'').trim(),
+          therapy: String(row['Terapia']||'').trim(),
+          value: parseFloat(row['Valor'])||0,
+          status: String(row['Status']||'Pago').trim()||'Pago',
+          paymentType: String(row['Forma de Pagamento']||'').trim(),
+          paymentDate: excelDateToISO(row['Data do Pagamento']),
+          clientType: String(row['Tipo de Cliente']||'Recorrente').trim()||'Recorrente',
+          acquisitionChannel: String(row['Origem (se Novo)']||'').trim(),
+          obs: String(row['Observações']||'').trim(),
+          payerName: name,
+          payerCpf: String(row['CPF']||'').trim()
+        };
+        const id = String(row['ID']||'').trim();
+        updates['launches/'+(id || uid('L'))] = payload;
+      });
+
+      clientRows.forEach(row=>{
+        const name = String(row['Nome']||'').trim();
+        if(!name) return;
+        const payload = {
+          name,
+          cpf: String(row['CPF']||'').trim(),
+          phone: String(row['Telefone']||'').trim(),
+          notes: String(row['Observações']||'').trim()
+        };
+        const id = String(row['ID']||'').trim();
+        updates['clients/'+(id || uid('C'))] = payload;
+      });
+
+      profRows.forEach(row=>{
+        const name = String(row['Nome']||'').trim();
+        if(!name) return;
+        const id = String(row['ID']||'').trim();
+        updates['professionals/'+(id || uid('P'))] = {name};
+      });
+
+      await db.ref().update(updates);
+      toast('Planilha importada com sucesso.');
+    }catch(err){
+      toast('Erro ao importar: '+(err.message||err));
+    }
+    evt.target.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function resetAllData(){
+  if(!confirm('Tem certeza? Isso apagará TODOS os clientes e lançamentos da nuvem, para todos os usuários. Esta ação não pode ser desfeita.')) return;
+  if(!confirm('Confirma novamente: apagar tudo permanentemente?')) return;
+  try{
+    await db.ref('clients').remove();
+    await db.ref('launches').remove();
+    toast('Todos os dados foram apagados.');
+  }catch(err){
+    toast('Erro: '+(err.message||err));
+  }
+}
+
+/* ================= MODALS ================= */
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+document.addEventListener('click', (e)=>{
+  if(e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+});
+
+</script>
+</body>
+</html>
