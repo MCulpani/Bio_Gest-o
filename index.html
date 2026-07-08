@@ -734,7 +734,7 @@ table.plan-tbl tr:hover td{background:rgba(184,133,58,0.05);}
         <div class="tbl-wrap">
           <table class="tbl" id="clientsTable">
             <thead><tr>
-              <th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Endereço</th><th>Total Pago</th><th>Pendências</th><th>Status</th><th>Ações</th>
+              <th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Endereço</th><th>Pendências</th><th>Status</th><th>Ações</th>
             </tr></thead>
             <tbody id="clientsTbody"></tbody>
           </table>
@@ -2217,7 +2217,7 @@ function renderClients(){
   list = list.sort((a,b)=>a.name.localeCompare(b.name));
 
   if(!list.length){
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
       <div class="em-icon">◐</div>
       <h3>Nenhum cliente encontrado</h3>
       <p>Cadastre seu primeiro cliente ou importe seus dados em Ajustes.</p>
@@ -2237,7 +2237,6 @@ function renderClients(){
       <td class="num">${c.phone||'—'}</td>
       <td>${c.email||'—'}</td>
       <td title="${addressTitle}">${addressLine||'—'}</td>
-      <td class="num">${fmtBRL(t.paid)}</td>
       <td class="num">${t.pending>0?fmtBRL(t.pending):'—'}</td>
       <td>${status}</td>
       <td>
