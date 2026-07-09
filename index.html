@@ -293,41 +293,25 @@ input,select,textarea{font-family:inherit;}
 .stat-delta.flat{color:var(--text-muted);}
 
  .balance-card{
-  background:linear-gradient(135deg,#3D6F56,#6FA482);
-  border:none;
-  color:#FFF;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 12px 30px rgba(61,111,86,.22);
+  background: linear-gradient(135deg,#3F7558 0%, #5E9B74 100%);
+  border:1px solid #4E8665;
+  box-shadow:0 10px 24px rgba(63,117,88,.20);
   transition:all .25s ease;
-}
-
-.balance-card::before{
-  content:"";
-  position:absolute;
-  top:-35px;
-  right:-35px;
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  background:rgba(255,255,255,.08);
 }
 
 .balance-card:hover{
   transform:translateY(-2px);
-  box-shadow:0 16px 34px rgba(61,111,86,.30);
+  box-shadow:0 14px 30px rgba(63,117,88,.28);
 }
 
 .balance-card .stat-label{
-  color:rgba(255,255,255,.80);
+  color:rgba(255,255,255,.82);
 }
 
 .balance-card .stat-value{
   color:#FFF;
-  font-size:30px;
   font-weight:700;
 }
-
 .section-title{
   font-family:var(--font-display);
   font-size:18px;font-weight:600;color:var(--ink);
