@@ -781,7 +781,7 @@ table.plan-tbl tr:hover td{background:rgba(184,133,58,0.05);}
           <table class="tbl" id="launchesTable">
             <thead><tr>
               <th class="select-col"><input type="checkbox" id="launchSelectAll" onchange="toggleSelectAllLaunches(this)"></th>
-              <th>Data</th><th>Cliente</th><th>CEP</th><th>Endereço</th><th>Profissional</th><th>Terapia</th><th>Valor</th><th>Pagamento</th><th>Data Pgto</th><th>Status</th><th>Ações</th>
+              <th>Data</th><th>Cliente</th><th>CPF</th><th>CEP</th><th>Endereço</th><th>Profissional</th><th>Terapia</th><th>Valor</th><th>Pagamento</th><th>Data Pgto</th><th>Status</th><th>Ações</th>
             </tr></thead>
             <tbody id="launchesTbody"></tbody>
           </table>
@@ -2402,6 +2402,7 @@ function renderLaunches(){
       <td class="select-col"><input type="checkbox" class="launch-select" value="${l.id}" onchange="updateGenerateNotesButton()"></td>
       <td class="num">${l.date ? new Date(l.date+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
       <td>${l.name}${novoBadge}</td>
+      <td>${cliente.cpf || ''}</td>
       <td class="num">${client && client.cep ? client.cep : '—'}</td>
       <td title="${addressTitle}">${addressLine || '—'}</td>
       <td>${l.professional||'—'}</td>
